@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: magento
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates
+      - ../src:/var/www/html
+    depends_on:
+      - php
+    restart: always
+    networks:
+      - internal
+
+  php:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    volumes:
+      - ../src:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+    restart: always
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: magento
+    networks:
+      - internal
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=magento
+      - PMA_PASSWORD=magento
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 8080:80
+    networks:
+      - internal
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge
