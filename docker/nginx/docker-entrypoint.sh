@@ -7,5 +7,6 @@ find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws 
 chown -R :www-data . # Ubuntu
 chmod u+x bin/magento
 
-# Run the php-fpm process
-php-fpm
+envsubst '' </templates/default.conf.template >/etc/nginx/nginx.conf
+
+exec nginx -g 'daemon off;'

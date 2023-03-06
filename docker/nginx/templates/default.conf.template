@@ -1,17 +1,20 @@
-upstream fastcgi_backend {
-    server php:9000;
+events {
+    worker_connections 1024;
 }
 
-server {
-    listen 0.0.0.0:80 reuseport;
-    server_name magento-test.com;
+http {
+    upstream fastcgi_backend {
+        server php:9000;
+    }
 
-    set $MAGE_ROOT /var/www/html;
+    server {
+        listen 0.0.0.0:80;
+        server_name magento-test.com;
 
-   set $MAGE_MODE developer;
-#    set $MAGE_MODE default;
-#    set $MAGE_MODE production;
+        set $MAGE_ROOT "/var/www/html";
+        set $MAGE_MODE "developer";
 
-    include /var/www/html/nginx.conf.sample;
-    fastcgi_read_timeout 3000;
+        include /var/www/html/nginx.conf.sample;
+        fastcgi_read_timeout 3000;
+    }
 }

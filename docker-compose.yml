@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 
 services:
   db:
@@ -15,12 +15,15 @@ services:
       - internal
 
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     ports:
       - "80:80"
     volumes:
-      - ./nginx/templates:/etc/nginx/templates
-      - ../src:/var/www/html
+      - type: bind
+        source: ./src
+        target: /var/www/html
     depends_on:
       - php
     restart: always
@@ -30,10 +33,12 @@ services:
   php:
     build:
       context: .
-      dockerfile: php/Dockerfile
+      dockerfile: docker/php/Dockerfile
     volumes:
-      - ../src:/var/www/html
-      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - type: bind
+        source: ./src
+        target: /var/www/html
     restart: always
     environment:
       MYSQL_HOST: db
