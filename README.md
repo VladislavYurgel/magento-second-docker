@@ -28,6 +28,7 @@ docker exec -it docker-web-1 bash
 composer install
 
 php bin/magento module:disable {Magento_Elasticsearch,Magento_Elasticsearch6,Magento_Elasticsearch7}
+php bin/magento module:enable {Magento_Elasticsearch,Magento_Elasticsearch6,Magento_Elasticsearch7}
 
 php bin/magento setup:install \
 --admin-firstname=Test \
@@ -35,7 +36,7 @@ php bin/magento setup:install \
 --admin-email=test@test.com \
 --admin-user=admin \
 --admin-password='!@#123asd' \
---base-url=http://localhost \
+--base-url=http://magento-test.local \
 --backend-frontname=admin \
 --db-host=db \
 --db-name=magento \
@@ -44,5 +45,8 @@ php bin/magento setup:install \
 --use-rewrites=1 \
 --language=en_US \
 --currency=USD \
---timezone=America/New_York
+--timezone=America/New_York \
+--search-engine=elasticsearch7 \
+--elasticsearch-host=elasticsearch \
+--elasticsearch-port=9200
 ```
